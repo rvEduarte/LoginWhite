@@ -10,9 +10,10 @@ public class SubmitLeaderboardScore : MonoBehaviour
   public void titeSubmit()
     {
 
-        int scoreToSubmit = 1000;
-        PlayerPrefs.SetFloat("tite1", 124.0f);
-        PlayerPrefs.SetFloat("tite", 0.85f);
+        int scoreToSubmit = 2000;
+        PlayerPrefs.SetFloat("tite1", 15.0f);
+        PlayerPrefs.SetFloat("tite", 0.50f);
+        PlayerPrefs.Save();
         Submit(scoreToSubmit);
     }
   public static void Submit(int scoreToSubmit)
