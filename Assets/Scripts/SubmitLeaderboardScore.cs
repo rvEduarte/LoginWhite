@@ -1,14 +1,18 @@
 using UnityEngine;
 using LootLocker.Requests;
 using System.ComponentModel;
+using TMPro;
 
 public class SubmitLeaderboardScore : MonoBehaviour
 {
   public static string leaderboardKey = "titehenlo";
+    public TMP_InputField inputscore;
   public void titeSubmit()
     {
-        int scoreToSubmit = 1000;
 
+        int scoreToSubmit = 1000;
+        PlayerPrefs.SetFloat("tite1", 124.0f);
+        PlayerPrefs.SetFloat("tite", 0.85f);
         Submit(scoreToSubmit);
     }
   public static void Submit(int scoreToSubmit)
@@ -16,11 +20,22 @@ public class SubmitLeaderboardScore : MonoBehaviour
     //the member id is set when the user logs in or uses guest login, if they have not done either of those then this will be empty and the request will fail.
     // we set it throughout WhiteLabelManager.cs, you can cmd/ctrl + f and look for PlayerPrefs.SetString("LLplayerId"
     string playerId = PlayerPrefs.GetString("LLplayerId");
-    LootLockerSDKManager.SubmitScore(playerId, scoreToSubmit, leaderboardKey, (response) =>
+        //string metadata = "timeTaken: " + PlayerPrefs.GetFloat("tite1") +" Accuracy: "+ PlayerPrefs.GetFloat("tite");
+
+        // Create metadata object
+        PlayerMetadata1 metadataObject = new PlayerMetadata1
+        {
+            timeTaken = PlayerPrefs.GetFloat("tite1"),
+            accuracy = PlayerPrefs.GetFloat("tite")
+        };
+        // Serialize metadata to JSON
+        string metadata = JsonUtility.ToJson(metadataObject);
+
+        LootLockerSDKManager.SubmitScore(playerId, scoreToSubmit, leaderboardKey, metadata, (response) =>
     {
       if (response.success)
       {
-        Debug.Log("SubmitLeaderboardScore successful");
+        Debug.Log("SubmitLeaderboardScore successful" + metadata);
       }
       else
       {
@@ -30,7 +45,8 @@ public class SubmitLeaderboardScore : MonoBehaviour
     });
   }
 
-  public static void GetPlayerHighScore()
+
+    public static void GetPlayerHighScore()
   {
         string playerIdString = PlayerPrefs.GetString("LLplayerId");
 

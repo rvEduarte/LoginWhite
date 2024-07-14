@@ -2,6 +2,7 @@ using UnityEngine;
 using LootLocker.Requests;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.Advertisements;
 
 
 
@@ -17,8 +18,10 @@ public class LeaderboardScript : MonoBehaviour
   [Header("Leaderboard Text")]
   public TextMeshProUGUI leaderboardGamerText;
   public TextMeshProUGUI leaderboardScoreText;
+    public TextMeshProUGUI leaderboardTimeText;
+    public TextMeshProUGUI leaderboardAccuracyText;
 
-  [Header("Error Handling")]
+    [Header("Error Handling")]
   public TextMeshProUGUI errorText;
   public GameObject errorPanel;
   public Animator errorScreenAnimator;
@@ -49,14 +52,21 @@ public class LeaderboardScript : MonoBehaviour
 
         leaderboardGamerText.text = "GAMER";
         leaderboardScoreText.text = "SCORE";
+            leaderboardTimeText.text = "TIME TAKEN";
+            leaderboardAccuracyText.text = "ACCURACY";
 
-        //for each item 
-        foreach (LootLockerLeaderboardMember score in response.items)
+            //for each item 
+            foreach (LootLockerLeaderboardMember score in response.items)
         {
           //add the score to the text
           leaderboardGamerText.text += "\n" + score.rank + ". " + score.player.name;
           leaderboardScoreText.text += "\n" + score.score.ToString();
-        }
+
+                // Parse metadata
+                PlayerMetadata1 metadata = JsonUtility.FromJson<PlayerMetadata1>(score.metadata);
+                leaderboardTimeText.text += "\n" + metadata.timeTaken.ToString();
+                leaderboardAccuracyText.text += "\n" + (metadata.accuracy * 100).ToString("F2") + "%";
+            }
       }
       else
       {
@@ -73,7 +83,6 @@ public class LeaderboardScript : MonoBehaviour
       }
     });
   }
-
   // Show an error message on the screen
   public void showErrorMessage(string message, int showTime = 3)
   {
