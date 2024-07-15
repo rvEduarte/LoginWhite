@@ -192,6 +192,8 @@ public class WhiteLabelManager : MonoBehaviour
     if (newPlayerName == "")
     {
       ShowErrorMessage("Please enter a display name");
+      newNickNameCreateButtonAnimator.SetTrigger("Error");
+      newNickNameInputFieldAnimator.SetTrigger("Show");
       return;
     }
 
@@ -554,72 +556,6 @@ public class WhiteLabelManager : MonoBehaviour
         // Email was sent!
       }
     });
-  }
-
-  public void GuestLogin()
-  {
-    //made guest login spin to show loading
-    startGuestLoginButtonAnimator.SetTrigger("Login");
-    //hide all other buttons
-    startCanvasAnimator.CallDisappearOnAllAnimators(startGuestLoginButtonAnimator.name);
-
-
-    Debug.Log("Guest login");
-
-    //if theres a player identifier saved in browser, log the user in with that, if not create a new guest session
-
-    string guestId = PlayerPrefs.GetString("LLguestId", "Nada");
-
-    if (guestId == "Nada")
-    {
-      LootLockerSDKManager.StartGuestSession((response) =>
-          {
-            if (!response.success)
-            {
-              Debug.Log("error starting LootLocker session");
-              ShowErrorMessage("Error logging in as a guest");
-              startGuestLoginButtonAnimator.SetTrigger("Error");
-
-              startCanvasAnimator.CallAppearOnAllAnimators();
-              return;
-            }
-            PlayerPrefs.SetString("LLplayerId", response.player_id.ToString());
-
-            startCanvasAnimator.CallDisappearOnAllAnimators();
-            // Load game screen
-            Debug.Log(response.public_uid);
-            CheckIfPlayerHasName(response.public_uid);
-            //save identifier to player prefs
-            PlayerPrefs.SetString("LLguestId", response.player_identifier);
-            Debug.Log("successfully started LootLocker session");
-          });
-    }
-
-    if (guestId != "Nada")
-    {
-      LootLockerSDKManager.StartGuestSession(guestId, (response) =>
-          {
-            if (!response.success)
-            {
-              Debug.Log("error starting LootLocker session");
-              ShowErrorMessage("Error logging in as a guest");
-              startGuestLoginButtonAnimator.SetTrigger("Error");
-
-              startCanvasAnimator.CallAppearOnAllAnimators();
-              return;
-            }
-            PlayerPrefs.SetString("LLplayerId", response.player_id.ToString());
-            startCanvasAnimator.CallDisappearOnAllAnimators();
-            // Load game screen
-            Debug.Log(response.public_uid);
-            CheckIfPlayerHasName(response.public_uid);
-            //save identifier to player prefs
-            PlayerPrefs.SetString("LLguestId", response.player_identifier);
-            Debug.Log("successfully started LootLocker session");
-          });
-    }
-
-
   }
 
   private string ExtractMessageFromLootLockerError(string rawError)
